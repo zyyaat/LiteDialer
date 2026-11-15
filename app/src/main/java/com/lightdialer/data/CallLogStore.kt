@@ -24,14 +24,19 @@ object CallLogStore {
     fun loadAsync(context: Context, onLoaded: (List<CallEntry>) -> Unit) {
         val app = context.applicationContext
         executor.execute {
-            val list = try { load(app) } catch (e: SecurityException) { emptyList() }
-            main.post { onLoaded(list) }
+            // ANY uncaught exception here kills the whole process the moment
+            // the app opens — degrade to an empty list instead.
+            val list = try { load(app) } catch (e: Throwable) { emptyList() }
+            main.post {
+                try { onLoaded(list) } catch (e: Throwable) { }
+            }
         }
     }
 
     private fun load(context: Context): List<CallEntry> {
         if (!Perms.granted(context, Manifest.permission.READ_CALL_LOG)) return emptyList()
         val out = ArrayList<CallEntry>(120)
+        // Plain sort order — some OEM providers reject appended "LIMIT n".
         val cursor = context.contentResolver.query(
             CallLog.Calls.CONTENT_URI,
             arrayOf(
@@ -43,22 +48,23 @@ object CallLogStore {
             ),
             null,
             null,
-            CallLog.Calls.DEFAULT_SORT_ORDER + " LIMIT 200"
+            CallLog.Calls.DEFAULT_SORT_ORDER
         ) ?: return out
         cursor.use { c ->
-            val iNum = c.getColumnIndexOrThrow(CallLog.Calls.NUMBER)
-            val iName = c.getColumnIndexOrThrow(CallLog.Calls.CACHED_NAME)
-            val iType = c.getColumnIndexOrThrow(CallLog.Calls.TYPE)
-            val iDate = c.getColumnIndexOrThrow(CallLog.Calls.DATE)
-            val iDur = c.getColumnIndexOrThrow(CallLog.Calls.DURATION)
-            while (c.moveToNext()) {
+            val iNum = c.getColumnIndex(CallLog.Calls.NUMBER)
+            val iName = c.getColumnIndex(CallLog.Calls.CACHED_NAME)
+            val iType = c.getColumnIndex(CallLog.Calls.TYPE)
+            val iDate = c.getColumnIndex(CallLog.Calls.DATE)
+            val iDur = c.getColumnIndex(CallLog.Calls.DURATION)
+            // cap manually instead of via SQL LIMIT (OEM-safe)
+            while (c.moveToNext() && out.size < 200) {
                 out.add(
                     CallEntry(
-                        number = c.getString(iNum) ?: "",
-                        name = c.getString(iName)?.takeIf { it.isNotBlank() },
-                        type = c.getInt(iType),
-                        date = c.getLong(iDate),
-                        duration = c.getLong(iDur)
+                        number = if (iNum >= 0) c.getString(iNum) ?: "" else "",
+                        name = if (iName >= 0) c.getString(iName)?.takeIf { it.isNotBlank() } else null,
+                        type = if (iType >= 0) c.getInt(iType) else CallLog.Calls.MISSED_TYPE,
+                        date = if (iDate >= 0) c.getLong(iDate) else 0L,
+                        duration = if (iDur >= 0) c.getLong(iDur) else 0L
                     )
                 )
             }

@@ -19,4 +19,9 @@
     <string name="state_ringing">مكالمة واردة</string>
     <string name="state_disconnected">انتهت المكالمة</string>
     <string name="notification_ongoing">مكالمة جارية</string>
+    <string name="crash_title">تقرير عطل</string>
+    <string name="crash_body">التطبيق توقف بشكل غير متوقع آخر مرة. تبعت التقرير عشان المشكلة تتصلح؟</string>
+    <string name="crash_send">إرسال التقرير</string>
+    <string name="crash_delete">حذف</string>
+    <string name="crash_chooser">إرسال تقرير العطل</string>
 </resources>

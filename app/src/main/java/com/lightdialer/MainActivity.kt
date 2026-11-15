@@ -3,6 +3,7 @@ package com.lightdialer
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -13,6 +14,7 @@ import com.lightdialer.databinding.ActivityMainBinding
 import com.lightdialer.util.DefaultDialer
 import com.lightdialer.util.DialManager
 import com.lightdialer.util.Perms
+import java.io.File
 
 class MainActivity : AppCompatActivity() {
 
@@ -48,9 +50,31 @@ class MainActivity : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
+        maybeShowCrashReport()
         refreshState()
         maybeHandleDialIntent()
         CallLogStore.loadAsync(this) { list -> adapter.submit(list) }
+    }
+
+    /** If the app crashed last run, offer to share the saved stack trace. */
+    private fun maybeShowCrashReport() {
+        val file = File(filesDir, "last_crash.txt")
+        if (!file.exists()) return
+        AlertDialog.Builder(this)
+            .setTitle(R.string.crash_title)
+            .setMessage(R.string.crash_body)
+            .setPositiveButton(R.string.crash_send) { _, _ ->
+                try {
+                    val send = Intent(Intent.ACTION_SEND).apply {
+                        type = "text/plain"
+                        putExtra(Intent.EXTRA_SUBJECT, "Lite Dialer crash report")
+                        putExtra(Intent.EXTRA_TEXT, file.readText())
+                    }
+                    startActivity(Intent.createChooser(send, getString(R.string.crash_chooser)))
+                } catch (e: Exception) { }
+            }
+            .setNegativeButton(R.string.crash_delete) { _, _ -> file.delete() }
+            .show()
     }
 
     private fun refreshState() {

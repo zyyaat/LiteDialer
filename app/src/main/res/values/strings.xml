@@ -20,4 +20,9 @@
     <string name="state_ringing">Incoming call</string>
     <string name="state_disconnected">Call ended</string>
     <string name="notification_ongoing">Ongoing call</string>
+    <string name="crash_title">Crash report</string>
+    <string name="crash_body">The app stopped unexpectedly last time. Send the report so the problem can be fixed?</string>
+    <string name="crash_send">Send report</string>
+    <string name="crash_delete">Delete</string>
+    <string name="crash_chooser">Send crash report</string>
 </resources>

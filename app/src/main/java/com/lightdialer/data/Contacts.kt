@@ -20,8 +20,10 @@ object Contacts {
     fun lookupNameAsync(context: Context, number: String, cb: (String?) -> Unit) {
         val app = context.applicationContext
         executor.execute {
-            val name = try { lookupName(app, number) } catch (e: SecurityException) { null }
-            main.post { cb(name) }
+            val name = try { lookupName(app, number) } catch (e: Throwable) { null }
+            main.post {
+                try { cb(name) } catch (e: Throwable) { }
+            }
         }
     }
 
@@ -46,8 +48,10 @@ object Contacts {
     fun suggestionsAsync(context: Context, prefix: String, cb: (List<Suggestion>) -> Unit) {
         val app = context.applicationContext
         executor.execute {
-            val list = try { suggestions(app, prefix) } catch (e: SecurityException) { emptyList() }
-            main.post { cb(list) }
+            val list = try { suggestions(app, prefix) } catch (e: Throwable) { emptyList() }
+            main.post {
+                try { cb(list) } catch (e: Throwable) { }
+            }
         }
     }
 
