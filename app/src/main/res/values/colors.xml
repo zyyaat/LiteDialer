@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="bg">#0E1116</color>
+    <color name="surface">#161B22</color>
+    <color name="surface_2">#1D2530</color>
+    <color name="text_primary">#E8EDF2</color>
+    <color name="text_secondary">#93A1B0</color>
+    <color name="accent">#3D8BFF</color>
+    <color name="green">#2ECC71</color>
+    <color name="red">#E74C3C</color>
+    <color name="white">#FFFFFF</color>
+    <color name="launcher_bg">#101820</color>
+
+    <!-- avatar palette -->
+    <color name="avatar_1">#2D6CDF</color>
+    <color name="avatar_2">#8E44AD</color>
+    <color name="avatar_3">#16A085</color>
+    <color name="avatar_4">#D35400</color>
+    <color name="avatar_5">#C0392B</color>
+    <color name="avatar_6">#27AE60</color>
+    <color name="avatar_7">#2980B9</color>
+    <color name="avatar_8">#7F8C8D</color>
+</resources>

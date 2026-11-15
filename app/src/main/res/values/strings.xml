@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name" translatable="false">Lite Dialer</string>
+    <string name="grant_permissions">Grant permissions</string>
+    <string name="set_default">Set as default dialer</string>
+    <string name="first_run_title">Almost ready</string>
+    <string name="first_run_body">Lite Dialer needs call log and contacts permissions, and must be set as your default phone app to show the in-call screen.</string>
+    <string name="unknown_number">Unknown number</string>
+    <string name="dial">Dial</string>
+    <string name="backspace">Delete</string>
+    <string name="answer">Answer</string>
+    <string name="decline">Decline</string>
+    <string name="end_call">End call</string>
+    <string name="mute">Mute</string>
+    <string name="speaker">Speaker</string>
+    <string name="keypad">Keypad</string>
+    <string name="state_dialing">Calling…</string>
+    <string name="state_active">Ongoing call</string>
+    <string name="state_holding">On hold</string>
+    <string name="state_ringing">Incoming call</string>
+    <string name="state_disconnected">Call ended</string>
+    <string name="notification_ongoing">Ongoing call</string>
+</resources>

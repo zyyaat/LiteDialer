@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="grant_permissions">السماح بالأذونات</string>
+    <string name="set_default">تعيين كتطبيق الاتصال الافتراضي</string>
+    <string name="first_run_title">باقي خطوة واحدة</string>
+    <string name="first_run_body">التطبيق محتاج إذن سجل المكالمات وجهات الاتصال، ولازم يبقى تطبيق الاتصال الافتراضي عشان يعرض شاشة المكالمة.</string>
+    <string name="unknown_number">رقم غير معروف</string>
+    <string name="dial">اتصال</string>
+    <string name="backspace">حذف</string>
+    <string name="answer">رد</string>
+    <string name="decline">رفض</string>
+    <string name="end_call">إنهاء المكالمة</string>
+    <string name="mute">كتم</string>
+    <string name="speaker">سماعة</string>
+    <string name="keypad">لوحة الأرقام</string>
+    <string name="state_dialing">جارٍ الاتصال…</string>
+    <string name="state_active">المكالمة جارية</string>
+    <string name="state_holding">مكالمة معلقة</string>
+    <string name="state_ringing">مكالمة واردة</string>
+    <string name="state_disconnected">انتهت المكالمة</string>
+    <string name="notification_ongoing">مكالمة جارية</string>
+</resources>
