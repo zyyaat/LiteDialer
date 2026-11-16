@@ -6,34 +6,27 @@
     android:gravity="center_vertical"
     android:paddingStart="20dp"
     android:paddingEnd="20dp"
+    android:paddingTop="10dp"
+    android:paddingBottom="10dp"
     android:background="?attr/selectableItemBackground">
 
     <TextView
-        android:id="@+id/sAvatar"
-        android:layout_width="36dp"
-        android:layout_height="36dp"
+        android:id="@+id/avatar"
+        android:layout_width="44dp"
+        android:layout_height="44dp"
         android:gravity="center"
         android:textColor="@color/white"
-        android:textSize="15sp"
+        android:textSize="18sp"
         android:textStyle="bold"/>
 
     <TextView
-        android:id="@+id/sName"
+        android:id="@+id/name"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="1"
         android:layout_marginStart="14dp"
-        android:layout_marginEnd="12dp"
         android:textColor="@color/text_primary"
-        android:textSize="16sp"
+        android:textSize="17sp"
         android:maxLines="1"
         android:ellipsize="end"/>
-
-    <TextView
-        android:id="@+id/sNumber"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textColor="@color/text_secondary"
-        android:textSize="14sp"
-        android:maxLines="1"/>
 </LinearLayout>

@@ -1,7 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="phone_title">الهاتف</string>
+    <string name="tab_keypad">لوحة المفاتيح</string>
+    <string name="tab_recents">سجل</string>
+    <string name="tab_contacts">جهات الاتصال</string>
     <string name="grant_permissions">السماح بالأذونات</string>
     <string name="set_default">تعيين كتطبيق الاتصال الافتراضي</string>
+    <string name="is_default">افتراضي ✓</string>
     <string name="first_run_title">باقي خطوة واحدة</string>
     <string name="first_run_body">التطبيق محتاج إذن سجل المكالمات وجهات الاتصال، ولازم يبقى تطبيق الاتصال الافتراضي عشان يعرض شاشة المكالمة.</string>
     <string name="unknown_number">رقم غير معروف</string>
@@ -12,9 +17,20 @@
     <string name="end_call">إنهاء المكالمة</string>
     <string name="mute">كتم</string>
     <string name="speaker">سماعة</string>
-    <string name="keypad">لوحة الأرقام</string>
+    <string name="keypad">لوحة المفاتيح</string>
+    <string name="hold">تعليق المكالمة</string>
+    <string name="send_sms">إرسال رسالة</string>
+    <string name="add_contact">إضافة جهة اتصال</string>
+    <string name="today">اليوم</string>
+    <string name="yesterday">أمس</string>
+    <string name="settings">الإعدادات</string>
+    <string name="section_appearance">المظهر</string>
+    <string name="section_calls">الاتصالات</string>
+    <string name="section_about">حول التطبيق</string>
+    <string name="dark_mode">الوضع الليلي</string>
+    <string name="version_label">الإصدار</string>
     <string name="state_dialing">جارٍ الاتصال…</string>
-    <string name="state_active">المكالمة جارية</string>
+    <string name="state_active">جارِ الاتصال…</string>
     <string name="state_holding">مكالمة معلقة</string>
     <string name="state_ringing">مكالمة واردة</string>
     <string name="state_disconnected">انتهت المكالمة</string>

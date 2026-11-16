@@ -1,23 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="bg">#0E1116</color>
-    <color name="surface">#161B22</color>
-    <color name="surface_2">#1D2530</color>
-    <color name="text_primary">#E8EDF2</color>
-    <color name="text_secondary">#93A1B0</color>
-    <color name="accent">#3D8BFF</color>
-    <color name="green">#2ECC71</color>
-    <color name="red">#E74C3C</color>
+    <!-- One UI light palette (matches Samsung Phone screenshots) -->
+    <color name="bg">#F5F5F5</color>
+    <color name="surface">#FFFFFF</color>
+    <color name="surface_2">#F0F0F0</color>
+    <color name="text_primary">#1B1B1D</color>
+    <color name="text_secondary">#8C8C8E</color>
+    <color name="accent">#1BA75B</color>
+    <color name="green">#1BA75B</color>
+    <color name="red">#E53935</color>
     <color name="white">#FFFFFF</color>
-    <color name="launcher_bg">#101820</color>
+    <color name="badge_blue">#4285F4</color>
+    <color name="sms_blue">#38A1F3</color>
+    <color name="call_bg_start">#5BA693</color>
+    <color name="call_bg_end">#7FBDA9</color>
+    <color name="launcher_bg">#1BA75B</color>
 
     <!-- avatar palette -->
-    <color name="avatar_1">#2D6CDF</color>
-    <color name="avatar_2">#8E44AD</color>
-    <color name="avatar_3">#16A085</color>
-    <color name="avatar_4">#D35400</color>
-    <color name="avatar_5">#C0392B</color>
-    <color name="avatar_6">#27AE60</color>
-    <color name="avatar_7">#2980B9</color>
-    <color name="avatar_8">#7F8C8D</color>
+    <color name="avatar_1">#B08BE0</color>
+    <color name="avatar_2">#35B99C</color>
+    <color name="avatar_3">#F08C42</color>
+    <color name="avatar_4">#6C8FE8</color>
+    <color name="avatar_5">#E5756E</color>
+    <color name="avatar_6">#4CAF7D</color>
+    <color name="avatar_7">#5FB8E8</color>
+    <color name="avatar_8">#A0A6AE</color>
 </resources>

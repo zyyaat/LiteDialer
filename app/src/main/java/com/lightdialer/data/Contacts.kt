@@ -10,6 +10,7 @@ import com.lightdialer.util.Perms
 import java.util.concurrent.Executors
 
 data class Suggestion(val name: String, val number: String)
+data class ContactRow(val name: String, val number: String)
 
 object Contacts {
 
@@ -42,6 +43,44 @@ object Contacts {
             if (c.moveToFirst()) return c.getString(0)
         }
         return null
+    }
+
+    /** All contacts with a phone number, one row per contact, alphabetically sorted. */
+    fun allAsync(context: Context, cb: (List<ContactRow>) -> Unit) {
+        val app = context.applicationContext
+        executor.execute {
+            val list = try { all(app) } catch (e: Throwable) { emptyList<ContactRow>() }
+            main.post {
+                try { cb(list) } catch (e: Throwable) { }
+            }
+        }
+    }
+
+    private fun all(context: Context): List<ContactRow> {
+        if (!Perms.granted(context, Manifest.permission.READ_CONTACTS)) return emptyList()
+        val out = ArrayList<ContactRow>(300)
+        context.contentResolver.query(
+            ContactsContract.CommonDataKinds.Phone.CONTENT_URI,
+            arrayOf(
+                ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME,
+                ContactsContract.CommonDataKinds.Phone.NUMBER
+            ),
+            null, null,
+            ContactsContract.Contacts.SORT_KEY_PRIMARY + " ASC"
+        )?.use { c ->
+            val iName = c.getColumnIndex(ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME)
+            val iNum = c.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER)
+            val seen = HashSet<String>()
+            while (c.moveToNext() && out.size < 1000) {
+                val n = c.getString(iName) ?: continue
+                val key = n.lowercase()
+                if (seen.add(key)) {
+                    val number = c.getString(iNum) ?: continue
+                    out.add(ContactRow(n, number))
+                }
+            }
+        }
+        return out
     }
 
     /** Number-prefix suggestions for the dialpad (max 5). */

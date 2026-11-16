@@ -2,15 +2,16 @@ package com.lightdialer
 
 import android.Manifest
 import android.app.Application
+import android.content.Intent
 import android.content.ContentProvider
 import android.content.ContentValues
-import android.content.Intent
 import android.database.Cursor
 import android.net.Uri
 import android.os.Looper
 import android.provider.CallLog
 import android.view.ContextThemeWrapper
 import android.view.LayoutInflater
+import android.widget.TextView
 import androidx.test.core.app.ApplicationProvider
 import com.lightdialer.data.CallLogStore
 import org.junit.Assert.assertTrue
@@ -24,9 +25,9 @@ import org.robolectric.annotation.GraphicsMode
 import org.robolectric.shadows.ShadowContentResolver
 
 /**
- * Launches the real activities and inflates the real list-row layouts on the
- * Samsung A10's API level (28). Any crash the user sees on launch will fail
- * these tests with the actual stack trace.
+ * v1.2 smoke tests: launches the tabbed main screen on the Samsung A10's API
+ * level (28), switches tabs, types on the keypad, inflates every layout, and
+ * verifies the provider-failure hardening still holds.
  */
 @RunWith(RobolectricTestRunner::class)
 @Config(sdk = [28])
@@ -37,33 +38,42 @@ class SmokeTest {
     fun mainActivity_launchesOnApi28() {
         val controller = Robolectric.buildActivity(MainActivity::class.java)
         controller.create().start().resume().visible()
-        // simulate backgrounding and returning
         controller.pause().stop()
         controller.start().resume()
         controller.destroy()
     }
 
     @Test
-    fun mainActivity_handlesDialIntent() {
+    fun mainActivity_dialIntentPrefillsKeypad() {
         val intent = Intent(Intent.ACTION_DIAL).apply {
-            data = android.net.Uri.parse("tel:0123456789")
+            data = android.net.Uri.parse("tel:01001234567")
         }
-        Robolectric.buildActivity(MainActivity::class.java, intent)
-            .create().start().resume().visible().destroy()
+        val controller = Robolectric.buildActivity(MainActivity::class.java, intent)
+        controller.create().start().resume().visible()
+        val dial = controller.get().findViewById<TextView>(R.id.dialText)
+        assertTrue("number should appear in dial text: ${dial.text}", dial.text.contains("0100"))
+        controller.destroy()
     }
 
     @Test
-    fun dialpadActivity_launchesAndTypes() {
-        val intent = Intent(ApplicationProvider.getApplicationContext(), DialpadActivity::class.java)
-            .putExtra(DialpadActivity.EXTRA_NUMBER, "0100")
-        val controller = Robolectric.buildActivity(DialpadActivity::class.java, intent)
+    fun mainActivity_switchTabsWithoutCrash() {
+        val controller = Robolectric.buildActivity(MainActivity::class.java)
         val activity = controller.create().start().resume().visible().get()
 
-        // backspace once, then clear all via long press
-        activity.findViewById<android.widget.ImageButton>(R.id.backspace).performClick()
-        activity.findViewById<android.widget.ImageButton>(R.id.backspace).performLongClick()
+        activity.findViewById<android.view.View>(R.id.tabRecents).performClick()
+        activity.findViewById<android.view.View>(R.id.tabContacts).performClick()
+        activity.findViewById<android.view.View>(R.id.tabKeypad).performClick()
 
         controller.pause().stop().destroy()
+    }
+
+    @Test
+    fun settingsActivity_launchesAndTogglesTheme() {
+        val controller = Robolectric.buildActivity(SettingsActivity::class.java)
+        val activity = controller.create().start().resume().visible().get()
+        activity.findViewById<androidx.appcompat.widget.SwitchCompat>(R.id.darkSwitch).performClick()
+        // theme change schedules recreate; just make sure nothing crashed
+        controller.destroy()
     }
 
     /** Rows use ?attr/selectableItemBackground, so they need the app theme. */
@@ -71,10 +81,13 @@ class SmokeTest {
     fun listRows_inflateWithAppTheme() {
         val ctx = ApplicationProvider.getApplicationContext<Application>()
         val themed = ContextThemeWrapper(ctx, R.style.Theme_LightDialer)
+        LayoutInflater.from(themed).inflate(R.layout.view_keypad, null)
         LayoutInflater.from(themed).inflate(R.layout.item_call_log, null)
-        LayoutInflater.from(themed).inflate(R.layout.item_suggestion, null)
+        LayoutInflater.from(themed).inflate(R.layout.item_contact, null)
+        LayoutInflater.from(themed).inflate(R.layout.item_section, null)
         LayoutInflater.from(themed).inflate(R.layout.activity_in_call, null)
-        LayoutInflater.from(themed).inflate(R.layout.activity_dialpad, null)
+        LayoutInflater.from(themed).inflate(R.layout.activity_settings, null)
+        LayoutInflater.from(themed).inflate(R.layout.activity_main, null)
     }
 
     /**

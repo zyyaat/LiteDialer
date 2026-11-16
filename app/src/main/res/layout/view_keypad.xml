@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <!-- Fixed-height suggestion row: reserved even when empty so the pad NEVER moves -->
+    <LinearLayout
+        android:id="@+id/suggestionRow"
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:paddingStart="20dp"
+        android:paddingEnd="20dp"
+        android:background="?attr/selectableItemBackground"
+        android:visibility="invisible">
+
+        <TextView
+            android:id="@+id/suggestionAvatar"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:gravity="center"
+            android:textColor="@color/white"
+            android:textSize="17sp"
+            android:textStyle="bold"/>
+
+        <TextView
+            android:id="@+id/suggestionName"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_marginStart="12dp"
+            android:textColor="@color/text_primary"
+            android:textSize="16sp"
+            android:maxLines="1"
+            android:ellipsize="end"/>
+
+        <TextView
+            android:id="@+id/suggestionNumber"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="12dp"
+            android:textColor="@color/accent"
+            android:textSize="14sp"
+            android:maxLines="1"/>
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/dialText"
+        android:layout_width="match_parent"
+        android:layout_height="84dp"
+        android:paddingStart="24dp"
+        android:paddingEnd="24dp"
+        android:gravity="center"
+        android:textColor="@color/text_primary"
+        android:textSize="34sp"
+        android:maxLines="1"
+        android:ellipsize="start"/>
+
+    <!-- Keys are fixed-height; the container centers them, so nothing shifts -->
+    <LinearLayout
+        android:id="@+id/pad"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:orientation="vertical"
+        android:gravity="center"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="88dp"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:paddingStart="24dp"
+        android:paddingEnd="24dp">
+
+        <ImageButton
+            android:id="@+id/backspace"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:stateListAnimator="@null"
+            android:contentDescription="@string/backspace"
+            android:src="@drawable/ic_backspace"
+            android:tint="@color/text_secondary"
+            android:visibility="gone"/>
+
+        <FrameLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1">
+
+            <ImageButton
+                android:id="@+id/callButton"
+                android:layout_width="64dp"
+                android:layout_height="64dp"
+                android:layout_gravity="center"
+                android:background="@drawable/bg_circle_green"
+                android:stateListAnimator="@null"
+                android:contentDescription="@string/dial"
+                android:src="@drawable/ic_call"
+                android:tint="@color/white"/>
+        </FrameLayout>
+
+        <ImageButton
+            android:id="@+id/smsButton"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:stateListAnimator="@null"
+            android:contentDescription="@string/send_sms"
+            android:src="@drawable/ic_sms"
+            android:tint="@color/sms_blue"
+            android:visibility="gone"/>
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/simPill"
+        android:layout_width="wrap_content"
+        android:layout_height="36dp"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginBottom="10dp"
+        android:background="@drawable/bg_sim_pill"
+        android:gravity="center"
+        android:paddingStart="16dp"
+        android:paddingEnd="16dp"
+        android:textColor="@color/text_primary"
+        android:textSize="14sp"
+        android:visibility="gone"/>
+</LinearLayout>

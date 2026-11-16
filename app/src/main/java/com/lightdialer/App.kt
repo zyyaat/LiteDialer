@@ -1,6 +1,7 @@
 package com.lightdialer
 
 import android.app.Application
+import androidx.appcompat.app.AppCompatDelegate
 import java.io.File
 import java.io.PrintWriter
 import java.io.StringWriter
@@ -14,6 +15,8 @@ class App : Application() {
 
     override fun onCreate() {
         super.onCreate()
+        applySavedTheme()
+
         val systemHandler = Thread.getDefaultUncaughtExceptionHandler()
         Thread.setDefaultUncaughtExceptionHandler { thread, throwable ->
             try {
@@ -30,5 +33,13 @@ class App : Application() {
             }
             systemHandler?.uncaughtException(thread, throwable)
         }
+    }
+
+    /** Light (One UI) by default; night mode when chosen in Settings. */
+    private fun applySavedTheme() {
+        val dark = getSharedPreferences("settings", MODE_PRIVATE).getBoolean("dark_mode", false)
+        AppCompatDelegate.setDefaultNightMode(
+            if (dark) AppCompatDelegate.MODE_NIGHT_YES else AppCompatDelegate.MODE_NIGHT_NO
+        )
     }
 }

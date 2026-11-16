@@ -20,8 +20,14 @@ import androidx.core.content.ContextCompat
 import com.lightdialer.R
 import com.lightdialer.data.Contacts
 import com.lightdialer.databinding.ActivityInCallBinding
+import com.lightdialer.util.Avatars
 import com.lightdialer.util.Formats
 
+/**
+ * The Samsung-style call screen: teal gradient, big white name, a translucent
+ * control panel (mute / speaker / hold / keypad) and the big red end button.
+ * While ringing it swaps to the two big round answer / decline buttons.
+ */
 class InCallActivity : AppCompatActivity(), ActiveCallManager.Listener {
 
     companion object {
@@ -66,6 +72,7 @@ class InCallActivity : AppCompatActivity(), ActiveCallManager.Listener {
         }
         b.mute.setOnClickListener { toggleMute() }
         b.speaker.setOnClickListener { toggleSpeaker() }
+        b.hold.setOnClickListener { toggleHold() }
         b.keypad.setOnClickListener { toggleKeypad() }
 
         buildDtmf()
@@ -105,55 +112,49 @@ class InCallActivity : AppCompatActivity(), ActiveCallManager.Listener {
         val c = call ?: return
         val details = c.details
 
+        val ringing = c.state == Call.STATE_RINGING
+        b.ringingRow.visibility = if (ringing) View.VISIBLE else View.GONE
+        b.controlsPanel.visibility = if (ringing) View.GONE else View.VISIBLE
+        b.endCall.visibility = if (ringing) View.GONE else View.VISIBLE
+
         when (c.state) {
-            Call.STATE_RINGING -> {
-                b.ringingRow.visibility = View.VISIBLE
-                b.endCall.visibility = View.GONE
-                b.callState.setText(R.string.state_ringing)
-            }
+            Call.STATE_RINGING -> b.callState.setText(R.string.state_ringing)
             Call.STATE_DIALING, Call.STATE_CONNECTING, Call.STATE_NEW,
-            Call.STATE_SELECT_PHONE_ACCOUNT -> {
-                b.ringingRow.visibility = View.GONE
-                b.endCall.visibility = View.VISIBLE
-                b.callState.setText(R.string.state_dialing)
-            }
+            Call.STATE_SELECT_PHONE_ACCOUNT -> b.callState.setText(R.string.state_dialing)
             Call.STATE_ACTIVE -> {
-                b.ringingRow.visibility = View.GONE
-                b.endCall.visibility = View.VISIBLE
                 b.callState.setText(R.string.state_active)
                 handler.removeCallbacks(ticker)
                 handler.post(ticker)
             }
-            Call.STATE_HOLDING -> {
-                b.ringingRow.visibility = View.GONE
-                b.endCall.visibility = View.VISIBLE
-                b.callState.setText(R.string.state_holding)
-            }
+            Call.STATE_HOLDING -> b.callState.setText(R.string.state_holding)
             Call.STATE_DISCONNECTED -> {
-                b.ringingRow.visibility = View.GONE
-                b.endCall.visibility = View.VISIBLE
                 b.callState.setText(R.string.state_disconnected)
                 b.duration.text = ""
                 handler.postDelayed({ finish() }, 800)
             }
-            else -> {
-                b.ringingRow.visibility = View.GONE
-                b.endCall.visibility = View.VISIBLE
-            }
         }
+
+        val count = ActiveCallManager.size
+        b.callCountBadge.visibility = if (count > 0) View.VISIBLE else View.GONE
+        b.callCountBadge.text = count.toString()
 
         val number = details?.handle?.schemeSpecificPart ?: ""
         val display = details?.callerDisplayName?.takeIf {
             it.isNotBlank() && details.callerDisplayNamePresentation == TelecomManager.PRESENTATION_ALLOWED
         }
-        b.callerName.text = display
+        val name = display
             ?: if (number.isBlank()) getString(R.string.unknown_number) else Formats.number(number)
+        b.callerName.text = name
+        Avatars.bind(b.avatarBig, name)
 
         if (!nameResolved && display == null && number.isNotBlank()) {
             nameResolved = true
-            Contacts.lookupNameAsync(this, number) { name ->
+            Contacts.lookupNameAsync(this, number) { resolved ->
                 val stillSame = call?.details?.handle?.schemeSpecificPart == number
-                if (name != null && stillSame) b.callerName.text = name
+                if (resolved != null && stillSame) {
+                    b.callerName.text = resolved
+                    Avatars.bind(b.avatarBig, resolved)
+                }
             }
         }
 
@@ -164,9 +165,14 @@ class InCallActivity : AppCompatActivity(), ActiveCallManager.Listener {
         }
 
         val svc = InCallServiceImpl.instance
-        b.mute.setColorFilter(if (svc?.callAudioState?.isMuted == true) accentColor() else secondaryColor())
+        val active = activeColor()
+        val idle = idleColor()
+        val muted = svc?.callAudioState?.isMuted == true
+        b.muteIcon.setColorFilter(if (muted) active else idle)
         val speakerOn = svc?.callAudioState?.route == CallAudioState.ROUTE_SPEAKER
-        b.speaker.setColorFilter(if (speakerOn) accentColor() else secondaryColor())
+        b.speakerIcon.setColorFilter(if (speakerOn) active else idle)
+        val held = c.state == Call.STATE_HOLDING
+        b.holdIcon.setColorFilter(if (held) active else idle)
     }
 
     private fun updateDuration() {
@@ -197,10 +203,18 @@ class InCallActivity : AppCompatActivity(), ActiveCallManager.Listener {
         render()
     }
 
+    private fun toggleHold() {
+        val c = call ?: return
+        try {
+            if (c.state == Call.STATE_ACTIVE) c.hold() else if (c.state == Call.STATE_HOLDING) c.unhold()
+        } catch (e: Exception) { }
+        render()
+    }
+
     private fun toggleKeypad() {
         val show = b.dtmfContainer.visibility != View.VISIBLE
         b.dtmfContainer.visibility = if (show) View.VISIBLE else View.GONE
-        b.keypad.setColorFilter(if (show) accentColor() else secondaryColor())
+        b.keypadIcon.setColorFilter(if (show) activeColor() else idleColor())
     }
 
     private fun buildDtmf() {
@@ -217,7 +231,7 @@ class InCallActivity : AppCompatActivity(), ActiveCallManager.Listener {
                     setTextColor(ContextCompat.getColor(context, R.color.text_primary))
                     background = ContextCompat.getDrawable(context, R.drawable.bg_key)
                     text = k.toString()
-                    layoutParams = LinearLayout.LayoutParams(0, dp(60), 1f).apply {
+                    layoutParams = LinearLayout.LayoutParams(0, dp(56), 1f).apply {
                         setMargins(dp(6), dp(5), dp(6), dp(5))
                     }
                     setOnTouchListener { v, ev ->
@@ -245,7 +259,7 @@ class InCallActivity : AppCompatActivity(), ActiveCallManager.Listener {
 
     private fun dp(v: Int) = (v * resources.displayMetrics.density).toInt()
 
-    private fun accentColor() = ContextCompat.getColor(this, R.color.accent)
+    private fun activeColor() = ContextCompat.getColor(this, R.color.green)
 
-    private fun secondaryColor() = ContextCompat.getColor(this, R.color.text_secondary)
+    private fun idleColor() = ContextCompat.getColor(this, R.color.text_secondary)
 }

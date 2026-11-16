@@ -13,7 +13,8 @@ data class CallEntry(
     val name: String?,
     val type: Int,
     val date: Long,
-    val duration: Long
+    val duration: Long,
+    val accountId: String? = null
 )
 
 object CallLogStore {
@@ -44,7 +45,8 @@ object CallLogStore {
                 CallLog.Calls.CACHED_NAME,
                 CallLog.Calls.TYPE,
                 CallLog.Calls.DATE,
-                CallLog.Calls.DURATION
+                CallLog.Calls.DURATION,
+                CallLog.Calls.PHONE_ACCOUNT_ID
             ),
             null,
             null,
@@ -56,6 +58,7 @@ object CallLogStore {
             val iType = c.getColumnIndex(CallLog.Calls.TYPE)
             val iDate = c.getColumnIndex(CallLog.Calls.DATE)
             val iDur = c.getColumnIndex(CallLog.Calls.DURATION)
+            val iAcc = c.getColumnIndex(CallLog.Calls.PHONE_ACCOUNT_ID)
             // cap manually instead of via SQL LIMIT (OEM-safe)
             while (c.moveToNext() && out.size < 200) {
                 out.add(
@@ -64,7 +67,8 @@ object CallLogStore {
                         name = if (iName >= 0) c.getString(iName)?.takeIf { it.isNotBlank() } else null,
                         type = if (iType >= 0) c.getInt(iType) else CallLog.Calls.MISSED_TYPE,
                         date = if (iDate >= 0) c.getLong(iDate) else 0L,
-                        duration = if (iDur >= 0) c.getLong(iDur) else 0L
+                        duration = if (iDur >= 0) c.getLong(iDur) else 0L,
+                        accountId = if (iAcc >= 0) c.getString(iAcc) else null
                     )
                 )
             }
